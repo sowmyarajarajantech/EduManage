@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduManage | Full Stack Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="dark-mode">
+
+    <div class="app-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <i class="fa-solid fa-graduation-cap"></i> <h2>EduManage</h2>
+                </div>
+                <button id="close-sidebar" class="icon-btn mobile-only"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <nav class="menu">
+                <button class="menu-item active" data-target="dashboard"><i class="fa-solid fa-gauge-high"></i> Dashboard</button>
+                <button class="menu-item" data-target="students"><i class="fa-solid fa-users"></i> Students</button>
+                <button class="menu-item" data-target="reports"><i class="fa-solid fa-chart-pie"></i> Reports</button>
+                <button class="menu-item" data-target="settings"><i class="fa-solid fa-gear"></i> Settings</button>
+            </nav>
+            <div class="user-profile">
+                <div class="avatar">A</div>
+                <div class="user-info"><span id="role-display">Admin</span> <small>Online</small></div>
+            </div>
+        </aside>
+        <div id="sidebar-overlay" class="sidebar-overlay"></div>
+
+        <main class="main-content">
+            <header class="top-header">
+                <div class="header-left">
+                    <button id="sidebar-toggle" class="icon-btn mobile-only"><i class="fa-solid fa-bars"></i></button>
+                    <h1 id="page-title">Dashboard</h1>
+                </div>
+                <div class="header-actions">
+                    <div class="stat-badge"><i class="fa-solid fa-user-group"></i> <span id="header-total">0</span> Total</div>
+                    <button id="theme-toggle" class="icon-btn"><i class="fa-solid fa-sun"></i></button>
+                </div>
+            </header>
+
+            <section id="dashboard" class="view-section active">
+                <div class="dashboard-cards">
+                    <div class="card stat-card">
+                        <div class="icon-box"><i class="fa-solid fa-users"></i></div>
+                        <div><h3>Total Students</h3><h2 id="dash-total">0</h2></div>
+                    </div>
+                    <div class="card stat-card">
+                        <div class="icon-box"><i class="fa-solid fa-star"></i></div>
+                        <div><h3>Avg Class Score</h3><h2 id="dash-avg">0</h2></div>
+                    </div>
+                    <div class="card stat-card">
+                        <div class="icon-box"><i class="fa-solid fa-graduation-cap"></i></div>
+                        <div><h3>Departments</h3><h2 id="dash-depts">0</h2></div>
+                    </div>
+                </div>
+                <div class="card recent-activity">
+                    <div class="card-header"><h3>Recent Top Performers</h3></div>
+                    <div class="table-responsive">
+                        <table class="data-table">
+                            <thead><tr><th>Name</th><th>Dept</th><th>Score</th></tr></thead>
+                            <tbody id="top-performers-body"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <section id="students" class="view-section hidden">
+                <div class="toolbar">
+                    <div class="search-box">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input type="text" id="search-input" placeholder="Search name, Reg ID, Blood Group...">
+                    </div>
+                    <div class="actions">
+                        <button id="bulk-delete-btn" class="btn btn-danger hidden role-admin-only"><i class="fa-solid fa-trash-can"></i> Delete (<span id="sel-count">0</span>)</button>
+                        <button id="export-csv" class="btn btn-outline"><i class="fa-solid fa-file-csv"></i> CSV</button>
+                        <button id="add-btn" class="btn btn-primary role-admin-only"><i class="fa-solid fa-plus"></i> Add Student</button>
+                    </div>
+                </div>
+                <div class="table-container card">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th class="checkbox-col role-admin-only"><input type="checkbox" id="select-all"></th>
+                                <th class="sortable" data-sort="name">Name <span class="sort-icon"></span></th>
+                                <th>Reg. No</th>
+                                <th>Dept</th>
+                                <th>Blood</th>
+                                <th class="sortable" data-sort="year">Year <span class="sort-icon"></span></th>
+                                <th class="sortable" data-sort="average_marks">Marks <span class="sort-icon"></span></th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="table-body">
+                            </tbody>
+                    </table>
+                    <div class="pagination-controls">
+                        <span id="page-info">Page 1</span>
+                        <div class="page-btns">
+                            <button id="prev-page" disabled><i class="fa-solid fa-chevron-left"></i></button>
+                            <button id="next-page" disabled><i class="fa-solid fa-chevron-right"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="reports" class="view-section hidden">
+                <div class="charts-grid">
+                    <div class="card chart-card"><h3>Students per Dept</h3><div id="chart-dept" class="bar-chart-container"></div></div>
+                    <div class="card chart-card">
+                        <div class="card-header-row">
+                            <h3>Avg Marks per Dept</h3>
+                            <select id="report-year-filter" class="mini-select">
+                                <option value="all">All Years</option>
+                                <option value="1">Year 1</option>
+                                <option value="2">Year 2</option>
+                                <option value="3">Year 3</option>
+                                <option value="4">Year 4</option>
+                            </select>
+                        </div>
+                        <div id="chart-avg" class="bar-chart-container"></div>
+                    </div>
+                    <div class="card chart-card full-width"><h3>Students per Year</h3><div id="chart-year" class="horizontal-bars"></div></div>
+                </div>
+            </section>
+
+            <section id="settings" class="view-section hidden">
+                <div class="card settings-card">
+                    <h3>Settings</h3>
+                    <div class="setting-group">
+                        <label>User Role</label>
+                        <select id="role-select">
+                            <option value="admin">Admin (Full Access)</option>
+                            <option value="viewer">Viewer (Read Only)</option>
+                        </select>
+                    </div>
+                    <div class="setting-group">
+                        <label>Database</label>
+                        <button id="reset-db-btn" class="btn btn-danger">Reset to 600 Students</button>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <div id="student-modal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <div class="modal-header"><h3>Student Details</h3><button class="close-modal icon-btn"><i class="fa-solid fa-xmark"></i></button></div>
+            <form id="student-form">
+                <input type="hidden" id="inp-id">
+                <div class="form-group"><label>Name</label><input type="text" id="inp-name" required></div>
+                <div class="form-group"><label>Reg No</label><input type="text" id="inp-reg" required></div>
+                <div class="row">
+                    <div class="form-group"><label>Dept</label><select id="inp-dept" required></select></div>
+                    <div class="form-group"><label>Blood</label><select id="inp-blood" required>
+                        <option value="A+">A+</option><option value="A-">A-</option><option value="B+">B+</option>
+                        <option value="B-">B-</option><option value="AB+">AB+</option><option value="AB-">AB-</option>
+                        <option value="O+">O+</option><option value="O-">O-</option>
+                    </select></div>
+                </div>
+                <div class="row">
+                    <div class="form-group"><label>Year</label><select id="inp-year"><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option></select></div>
+                    <div class="form-group"><label>Marks</label><input type="number" id="inp-marks" min="0" max="100" required></div>
+                </div>
+                <div class="modal-footer"><button type="submit" class="btn btn-primary">Save</button></div>
+            </form>
+        </div>
+    </div>
+
+    <div id="profile-modal" class="modal-overlay hidden">
+        <div class="modal-content profile-card">
+            <div class="modal-header"><h3>Profile</h3><button class="close-modal icon-btn"><i class="fa-solid fa-xmark"></i></button></div>
+            <div class="profile-body">
+                <div class="profile-avatar"><i class="fa-solid fa-user-graduate"></i></div>
+                <h2 id="view-name"></h2><p id="view-reg" class="text-muted"></p><div id="view-badge" class="badge"></div>
+                <div class="profile-details">
+                    <div><span>Dept</span><strong id="view-dept"></strong></div>
+                    <div><span>Blood</span><strong id="view-blood" style="color:#ef233c"></strong></div>
+                    <div><span>Year</span><strong id="view-year"></strong></div>
+                    <div><span>Marks</span><strong id="view-marks"></strong></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
